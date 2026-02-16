@@ -9,4 +9,6 @@ export class UserController {
     async findAll() {
         return this.userCase.findAll();
     }
+    
+    // Create user
 }
