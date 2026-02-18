@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { UserService } from "../user.service";
 import { ApiResponseDto } from "../dto/api-response.dto";
 import { FindAllUsersResponseDto } from "../dto/find-all-uses-response.dto";
@@ -11,12 +11,7 @@ export class FindAllUsersUseCase {
         const res = await this.userService.findAll();
 
         if (!res) {
-            return {
-                statusCode: 500,
-                status: false,
-                message: 'Internal server error',
-                data: [],
-            }
+            throw new InternalServerErrorException('Failed to retrieve users');
         }
 
         return {

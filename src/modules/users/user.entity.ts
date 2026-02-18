@@ -14,6 +14,9 @@ export class User {
     @Column()
     name: string;
 
+    @Column({ unique: true })
+    username: string;
+
     @Column()
     email: string;
 
@@ -21,7 +24,7 @@ export class User {
     password: string;
 
     @Column()
-    role: ENUM;
+    role: ROLE;
 
     @Column({ nullable: true })
     refreshToken: string;
@@ -36,7 +39,7 @@ export class User {
     updatedAt: Date;
 }
 
-enum ENUM {
+export enum ROLE {
     ADMIN_MASTER = 'admin_master',
     ADMIN = 'admin',
     USER = 'user',

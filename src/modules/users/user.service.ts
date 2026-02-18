@@ -3,6 +3,8 @@ import { User } from "./user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import { ROLE } from "./user.entity";
+
 @Injectable()
 export class UserService {
     constructor(@InjectRepository(User) private readonly userEntity: Repository<User>) { }
@@ -18,7 +20,26 @@ export class UserService {
         return this.userEntity.findOne({ where: { email } });
     }
 
+    async findByUsername(username: string) {
+        return this.userEntity.findOne({ where: { username } });
+    }
+
     async findById(id: string) {
         return this.userEntity.findOne({ where: { id } });
+    }
+
+    async count() {
+        return this.userEntity.count();
+    }
+
+    async create(data: { name: string, username: string, email: string, password: string, role: ROLE }) {
+        const user = this.userEntity.create({ ...data, role: data.role });
+        return this.userEntity.save(user);
+    }
+
+    async checkUserExistsByEmailAndUsername(email: string, username: string) {
+        const user = await this.userEntity.findOne({ where: { email } });
+        const userByUsername = await this.userEntity.findOne({ where: { username } });
+        return !!user || !!userByUsername;
     }
 };
