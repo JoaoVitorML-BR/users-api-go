@@ -2,6 +2,8 @@ import { BadRequestException, ConflictException, Injectable, InternalServerError
 import { UserService } from "../user.service";
 import { CreateUserDTO } from "../dto/create-users.dto";
 
+import * as bcrypt from 'bcrypt';
+
 import { ROLE } from "../user.entity";
 import { ApiResponseDto } from "../dto/api-response.dto";
 
@@ -15,10 +17,12 @@ export class CreateUsersUseCase {
             throw new BadRequestException("Name, username, email and password are required");
         }
 
+        const hashedPassword = await bcrypt.hash(Data.password, 10);
+
         const userCount = await this.userService.count();
 
         if (userCount === 0) {
-            const user = await this.userService.create({ ...Data, role: ROLE.ADMIN_MASTER });
+            const user = await this.userService.create({ ...Data, password: hashedPassword, role: ROLE.ADMIN_MASTER });
 
             if (!user || !user.id) {
                 throw new InternalServerErrorException("Failed to create user");
@@ -38,7 +42,7 @@ export class CreateUsersUseCase {
             throw new ConflictException('User with the same email or username already exists');
         }
 
-        const res = await this.userService.create({ ...Data, role: ROLE.USER });
+        const res = await this.userService.create({ ...Data, password: hashedPassword, role: ROLE.USER });
 
         if (!res || !res.id) {
             throw new InternalServerErrorException('Failed to create user');
