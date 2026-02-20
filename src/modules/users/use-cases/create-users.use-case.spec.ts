@@ -61,7 +61,10 @@ describe('CreateUsersUseCase', () => {
 
       expect(mockUserService.count).toHaveBeenCalledTimes(1);
       expect(mockUserService.create).toHaveBeenCalledWith({
-        ...validUserData,
+        name: validUserData.name,
+        username: validUserData.username,
+        email: validUserData.email,
+        password: expect.any(String),
         role: ROLE.ADMIN_MASTER,
       });
       expect(result).toEqual({
@@ -109,7 +112,10 @@ describe('CreateUsersUseCase', () => {
         validUserData.username,
       );
       expect(mockUserService.create).toHaveBeenCalledWith({
-        ...validUserData,
+        name: validUserData.name,
+        username: validUserData.username,
+        email: validUserData.email,
+        password: expect.any(String),
         role: ROLE.USER,
       });
       expect(result).toEqual({
