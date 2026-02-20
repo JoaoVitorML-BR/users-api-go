@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { FindAllUsersUseCase } from './use-cases/find-all-users.use-case';
 import { CreateUsersUseCase } from './use-cases/create-users.use-case';
+import { CreateUsersAdminUseCase } from './use-cases/create-users-admin.use-case';
 import { ROLE } from './user.entity';
 
 describe('UserController', () => {
@@ -17,6 +18,10 @@ describe('UserController', () => {
     create: jest.fn(),
   };
 
+  const mockCreateUsersAdminUseCase = {
+    createAdmin: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
@@ -28,6 +33,10 @@ describe('UserController', () => {
         {
           provide: CreateUsersUseCase,
           useValue: mockCreateUsersUseCase,
+        },
+        {
+          provide: CreateUsersAdminUseCase,
+          useValue: mockCreateUsersAdminUseCase,
         },
       ],
     }).compile();

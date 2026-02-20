@@ -9,7 +9,9 @@ import { ROLE } from "./user.entity";
 export class UserService {
     constructor(@InjectRepository(User) private readonly userEntity: Repository<User>) { }
     async findAll() {
-        return this.userEntity.find();
+        return this.userEntity.find({
+            select: ['id', 'name', 'username', 'email', 'role', 'isActive', 'createdAt', 'updatedAt']
+        });
     };
 
     async findOne(id: string) {
@@ -41,5 +43,9 @@ export class UserService {
         const user = await this.userEntity.findOne({ where: { email } });
         const userByUsername = await this.userEntity.findOne({ where: { username } });
         return !!user || !!userByUsername;
+    }
+
+    async findByUsernameOrEmail(login: string) {
+        return this.userEntity.findOne({ where: [{ username: login }, { email: login }] });
     }
 };

@@ -3,6 +3,7 @@ import {
     ExecutionContext,
     Injectable,
     NestInterceptor,
+    HttpStatus,
 } from '@nestjs/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -18,14 +19,29 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
                     typeof data === 'object' &&
                     'statusCode' in data &&
                     'status' in data &&
+                    'code' in data &&
                     'message' in data &&
                     'data' in data
                 ) {
                     return data;
                 }
+
+                const statusCode = context.switchToHttp().getResponse().statusCode;
+
+                // Mapping status codes to descriptive codes
+                const codeMap = {
+                    [HttpStatus.OK]: 'SUCCESS',
+                    [HttpStatus.CREATED]: 'CREATED',
+                    [HttpStatus.ACCEPTED]: 'ACCEPTED',
+                    [HttpStatus.NO_CONTENT]: 'NO_CONTENT',
+                };
+
+                const code = codeMap[statusCode] || 'SUCCESS';
+
                 return {
-                    statusCode: context.switchToHttp().getResponse().statusCode,
+                    statusCode,
                     status: true,
+                    code,
                     message: 'Request successful',
                     data,
                 };
