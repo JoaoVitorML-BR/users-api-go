@@ -5,6 +5,8 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { FindAllUsersUseCase } from './use-cases/find-all-users.use-case';
 import { CreateUsersUseCase } from './use-cases/create-users.use-case';
+import { CreateUsersAdminUseCase } from './use-cases/create-users-admin.use-case';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Module({
     imports: [TypeOrmModule.forFeature([User])],
@@ -13,6 +15,8 @@ import { CreateUsersUseCase } from './use-cases/create-users.use-case';
         UserService, 
         FindAllUsersUseCase,
         CreateUsersUseCase,
+        CreateUsersAdminUseCase,
+        RolesGuard,
     ],
     exports: [UserService],
 })
