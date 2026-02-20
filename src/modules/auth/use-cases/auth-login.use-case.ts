@@ -7,12 +7,15 @@ import { ApiResponseDto } from "src/modules/users/dto/api-response.dto";
 import { ResponseAuthLoginDTO } from "../dto/response-auth-login.dto";
 
 import { AuthService } from "../auth.service";
+import { RefreshTokenDto } from "../dto/refresh-token.dto";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthSignInUseCase {
     constructor(
         private readonly userService: UserService,
-        private readonly authService: AuthService
+        private readonly authService: AuthService,
+        private readonly jwtService: JwtService
     ) { }
 
     async signIn(signInDto: SignInDto): Promise<ApiResponseDto<ResponseAuthLoginDTO>> {
@@ -37,6 +40,9 @@ export class AuthSignInUseCase {
 
         const tokens = await this.authService.generateAccessToken(userWithoutPassword);
 
+        // Salvar refreshToken no banco
+        await this.userService.updateRefreshToken(userWithoutPassword.id, tokens.refreshToken);
+
         return {
             statusCode: 200,
             status: true,
@@ -55,5 +61,42 @@ export class AuthSignInUseCase {
                 expiresIn: tokens.expiresIn
             }
         };
+    }
+
+    async refreshToken(dto: RefreshTokenDto) {
+        try {
+            const payload = await this.jwtService.verifyAsync(dto.refreshToken);
+
+            const user = await this.userService.findById(payload.sub);
+            if (!user || !user.isActive) {
+                throw new UnauthorizedException('User not found or inactive');
+            }
+
+            // Valid if the refresh token matches the one stored in the database
+            if (user.refreshToken !== dto.refreshToken) {
+                throw new UnauthorizedException('Invalid refresh token');
+            }
+
+            const { password: _, ...userWithoutPassword } = user;
+
+            const tokens = await this.authService.generateAccessToken(userWithoutPassword);
+
+            // Update the refresh token in the database
+            await this.userService.updateRefreshToken(user.id, tokens.refreshToken);
+
+            return {
+                statusCode: 200,
+                status: true,
+                code: "SUCCESS",
+                message: "Token refreshed successfully",
+                data: {
+                    accessToken: tokens.accessToken,
+                    refreshToken: tokens.refreshToken,
+                    expiresIn: tokens.expiresIn
+                }
+            };
+        } catch (error) {
+            throw new UnauthorizedException('Invalid or expired refresh token');
+        }
     }
 }
