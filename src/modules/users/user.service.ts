@@ -48,4 +48,8 @@ export class UserService {
     async findByUsernameOrEmail(login: string) {
         return this.userEntity.findOne({ where: [{ username: login }, { email: login }] });
     }
+
+    async updateRefreshToken(userId: string, refreshToken: string) {
+        await this.userEntity.update(userId, { refreshToken });
+    }
 };
