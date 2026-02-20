@@ -44,6 +44,9 @@ describe('FindAllUsersUseCase', () => {
           username: 'john123',
           email: 'john@test.com',
           role: ROLE.USER,
+          isActive: true,
+          createdAt: new Date('2024-01-01T00:00:00.000Z'),
+          updatedAt: new Date('2024-01-02T00:00:00.000Z'),
         },
         {
           id: '2',
@@ -51,6 +54,9 @@ describe('FindAllUsersUseCase', () => {
           username: 'jane123',
           email: 'jane@test.com',
           role: ROLE.ADMIN_MASTER,
+          isActive: true,
+          createdAt: new Date('2024-02-01T00:00:00.000Z'),
+          updatedAt: new Date('2024-02-02T00:00:00.000Z'),
         },
       ];
 

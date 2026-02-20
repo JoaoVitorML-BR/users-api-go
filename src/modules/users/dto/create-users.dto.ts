@@ -14,3 +14,5 @@ export class CreateUserDTO {
     }, { message: 'The password must be at least 8 characters long and include uppercase, lowercase, number and symbol.' })
     password: string;
 }
+
+export class CreateUserAdminDTO extends CreateUserDTO { }
