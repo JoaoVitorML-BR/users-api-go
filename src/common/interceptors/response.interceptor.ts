@@ -23,6 +23,8 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
                     'message' in data &&
                     'data' in data
                 ) {
+                    const response = context.switchToHttp().getResponse();
+                    response.status(data.statusCode);
                     return data;
                 }
 
